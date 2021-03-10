@@ -28,15 +28,16 @@ import androidx.core.view.WindowCompat
 
 private val DarkColorPalette = darkColors(
     background = darkNavy,
-    primary = darkNavy,
+    primary = lightPurpleBlue,
     primaryVariant = outerRingLight,
     secondary = darkPurple,
     onPrimary = Color.White,
-    onSecondary = Color.White,
+    onSecondary = Color.White
 )
 
+@OptIn(ExperimentalUnsignedTypes::class)
 @Composable
-fun MyTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
+fun TimerTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
     val colors = DarkColorPalette
     val view = LocalView.current
     val window = (LocalContext.current as Activity).window

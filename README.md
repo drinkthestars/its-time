@@ -1,27 +1,25 @@
-# Template repository
+# Put title of your app here
 
-Template repository for the Jetpack Compose [#AndroidDevChallenge](https://developer.android.com/dev-challenge).
+<!--- Replace <OWNER> with your Github Username and <REPOSITORY> with the name of your repository. -->
+<!--- You can find both of these in the url bar when you open your repository in github. -->
+![Workflow result](https://github.com/drinkthestars/itstime/workflows/Check/badge.svg)
 
-## Getting started
-Copy this repository by pressing the "Use this template" button in Github.
-Clone your repository and open it in the latest [Android Studio (Canary build)](https://developer.android.com/studio/preview).
 
-## Submission requirements
-- Follow the challenge description on the project website: [developer.android.com/dev-challenge](https://developer.android.com/dev-challenge)
-- All UI should be written using Jetpack Compose
-- The Github Actions workflow should complete successfully
-- Include two screenshots of your submission in the [results](results) folder. The names should be
-  screenshot_1.png and screenshot_2.png.
-- Include a screen record of your submission in the [results](results) folder. The name should be
-  video.mp4
-- Replace the contents of [README.md](README.md) with the contents of [README-template.md](README-template.md) and fill out the template.
+## :scroll: Description
+A "minimal" timer that displays 3 colored rings to indicate the progress of seconds, hours, and minutes, from the outside-in.
+In the center of the timer, a 3D projected cube rotates as the timer progresses.
 
-## Code formatting
-The CI uses [Spotless](https://github.com/diffplug/spotless) to check if your code is formatted correctly and contains the right licenses.
-Internally, Spotless uses [ktlint](https://github.com/pinterest/ktlint) to check the formatting of your code.
-To set up ktlint correctly with Android Studio, follow one of the [listed setup options](https://github.com/pinterest/ktlint#-with-intellij-idea).
 
-Before committing your code, run `./gradlew app:spotlessApply` to automatically format your code.
+## :bulb: Motivation and Context
+Explores animation/state choreography and Canvas drawing APIs in Compose. The rotating cube is an exercise in
+3D -> 2D projection mechanics, inspired by [The Coding Train's](https://www.youtube.com/watch?v=p4Iz0XJY-Qk&ab_channel=TheCodingTrain) Processing 3 tutorials.
+
+Timer design inspired by a couple of designs on Dribbble such as [this](https://dribbble.com/shots/5717098-Daily-UI-Design-Challenge-014-Countdown-Timer) and [this](https://dribbble.com/shots/5115846-Daily-UI-014-Countdown-Timer)
+
+
+## :camera_flash: Screenshots
+<!-- You can add more screenshots here if you like -->
+<img src="/results/screenshot_1.png" width="260">&emsp;<img src="/results/screenshot_2.png" width="260">
 
 ## License
 ```

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.example.androiddevchallenge.ui
 
 import androidx.compose.animation.AnimatedVisibility
@@ -5,13 +20,11 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -23,17 +36,21 @@ import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.consumePositionChange
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.androiddevchallenge.ui.theme.gray
-import kotlin.math.absoluteValue
+import com.example.androiddevchallenge.ui.theme.innerRingDark
+import com.example.androiddevchallenge.ui.theme.innerRingLight
+import com.example.androiddevchallenge.ui.theme.midRingDark
+import com.example.androiddevchallenge.ui.theme.midRingLight
+import com.example.androiddevchallenge.ui.theme.outerRingDark
+import com.example.androiddevchallenge.ui.theme.outerRingLight
+import com.example.androiddevchallenge.ui.theme.timeControls
 
 @Composable
 fun PlaybackControlIcon(imageVector: ImageVector, tint: Color) {
@@ -49,7 +66,7 @@ fun PlaybackControlIcon(imageVector: ImageVector, tint: Color) {
 @Composable
 fun TimeChooser(
     controlsSize: Dp = 20.dp,
-    controlsColor: Color = gray,
+    controlsColor: Color = timeControls,
     showControls: Boolean,
     onChange: (TimeState.Change) -> Unit,
     content: @Composable () -> Unit
@@ -108,29 +125,18 @@ fun TimeSeparator() {
 }
 
 @Composable
-fun TimeText(text: Int, dragEnabled: Boolean, onChange: (TimeState.Change) -> Unit) {
+fun TimeText(text: Int) {
     Text(
         textAlign = TextAlign.Center,
         text = "$text",
         style = MaterialTheme.typography.h3,
         fontWeight = FontWeight.Light,
-        letterSpacing = 2.sp,
-        modifier = Modifier
-            .pointerInput(Unit) {
-                detectVerticalDragGestures { change, dragAmount ->
-                    println("dragAmount = $dragAmount")
-                    if (dragAmount.absoluteValue >= 2) {
-                        if (dragEnabled) {
-                            onChange(
-                                when {
-                                    dragAmount < 0 -> TimeState.Change.Increase
-                                    else -> TimeState.Change.Decrease
-                                }
-                            )
-                            change.consumePositionChange()
-                        }
-                    }
-                }
-            }
+        letterSpacing = 2.sp
     )
+}
+
+class TimeCircleBrushes {
+    val outerSweepGradient = Brush.sweepGradient(listOf(outerRingLight, outerRingDark))
+    val midSweepGradient = Brush.sweepGradient(listOf(midRingLight, midRingDark))
+    val innerSweepGradient = Brush.sweepGradient(listOf(innerRingLight, innerRingDark))
 }

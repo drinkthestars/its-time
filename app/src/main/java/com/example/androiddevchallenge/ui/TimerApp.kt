@@ -1,11 +1,30 @@
+/*
+ * Copyright 2021 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.example.androiddevchallenge.ui
 
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +47,7 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,34 +70,40 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.example.androiddevchallenge.ui.theme.green
-import com.example.androiddevchallenge.ui.theme.innerRingDark
-import com.example.androiddevchallenge.ui.theme.innerRingLight
+import com.example.androiddevchallenge.ui.theme.cubeEdges
 import com.example.androiddevchallenge.ui.theme.lightNavy
-import com.example.androiddevchallenge.ui.theme.midRingDark
-import com.example.androiddevchallenge.ui.theme.midRingLight
-import com.example.androiddevchallenge.ui.theme.orange
-import com.example.androiddevchallenge.ui.theme.outerRingDark
-import com.example.androiddevchallenge.ui.theme.outerRingLight
-import com.example.androiddevchallenge.ui.theme.red
+import com.example.androiddevchallenge.ui.theme.lightPurpleBlue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 internal const val TickerIntervalMillis = 1000L
 internal const val TickerStartDelayMillis = 400L
 
 @Composable
 fun TimerApp() {
-    val vibrator = ContextCompat.getSystemService(LocalContext.current, Vibrator::class.java)
     Surface(color = MaterialTheme.colors.background) {
+        val vibrator = vibrator()
         val coroutineScope = rememberCoroutineScope()
+        val cubeState = rememberCubeState(coroutineScope)
         val state = remember {
-            TimeState(coroutineScope, onCountDownComplete = { vibrator?.vibrate() })
+            TimeState(
+                coroutineScope,
+                onCountdownStarted = { cubeState.animate() },
+                onCountdownComplete = {
+                    vibrator?.vibrate()
+                    cubeState.stop()
+                },
+                onCountdownPaused = { cubeState.stop() },
+                onCountdownReset = { cubeState.stop() }
+            )
         }
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier.fillMaxSize()
         ) {
-            Timer(modifier = Modifier.fillMaxWidth(0.83f), state)
+            Timer(modifier = Modifier.fillMaxWidth(0.83f), state, cubeState)
             TimerPlaybackControls(
                 modifier = Modifier.size(50.dp),
                 onPlayPause = { state.playPause() },
@@ -89,7 +115,11 @@ fun TimerApp() {
 }
 
 @Composable
-private fun Timer(modifier: Modifier = Modifier, state: TimeState) {
+private fun Timer(
+    modifier: Modifier = Modifier,
+    state: TimeState,
+    cubeState: CubeState
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -102,6 +132,12 @@ private fun Timer(modifier: Modifier = Modifier, state: TimeState) {
             modifier = modifier,
             state = state
         ) {
+            RotatingCube(
+                modifier = Modifier.align(Alignment.Center),
+                cubeState = cubeState,
+                color = cubeEdges,
+                scaleFactor = 1.55f
+            )
             TimeDisplay(modifier = Modifier.align(Alignment.Center), state)
         }
     }
@@ -116,34 +152,31 @@ private fun TimeDisplay(modifier: Modifier, state: TimeState) {
         horizontalArrangement = Arrangement.Center
     ) {
         TimeChooser(
+            controlsSize = 30.dp,
             showControls = !state.isPlaying,
             onChange = { state.changeHours(it) }
         ) {
-            TimeText(state.hoursLeft, dragEnabled = !state.isPlaying) { state.changeHours(it) }
+            TimeText(state.hoursLeft)
         }
-        Spacer(Modifier.width(8.dp))
+        Spacer(Modifier.width(4.dp))
         TimeSeparator()
-        Spacer(Modifier.width(8.dp))
+        Spacer(Modifier.width(4.dp))
         TimeChooser(
+            controlsSize = 30.dp,
             showControls = !state.isPlaying,
             onChange = { state.changeMinutes(it) }
         ) {
-            TimeText(
-                state.minutesLeft,
-                dragEnabled = !state.isPlaying
-            ) { state.changeMinutes(it) }
+            TimeText(state.minutesLeft)
         }
-        Spacer(Modifier.width(8.dp))
+        Spacer(Modifier.width(4.dp))
         TimeSeparator()
-        Spacer(Modifier.width(8.dp))
+        Spacer(Modifier.width(4.dp))
         TimeChooser(
+            controlsSize = 30.dp,
             showControls = !state.isPlaying,
             onChange = { state.changeSeconds(it) }
         ) {
-            TimeText(
-                state.secondsLeft,
-                dragEnabled = !state.isPlaying
-            ) { state.changeSeconds(it) }
+            TimeText(state.secondsLeft)
         }
     }
 }
@@ -155,18 +188,9 @@ private fun TimeCircles(
     content: @Composable BoxScope.() -> Unit,
 ) {
     var size by remember { mutableStateOf(IntSize.Zero) }
-    val hours by animateFloatAsState(
-        state.hoursAngle,
-        tween(TickerIntervalMillis.toInt(), easing = LinearEasing)
-    )
-    val minutes by animateFloatAsState(
-        state.minutesAngle,
-        tween(TickerIntervalMillis.toInt(), easing = LinearEasing)
-    )
-    val seconds by animateFloatAsState(
-        state.secondsAngle,
-        tween(TickerIntervalMillis.toInt(), easing = LinearEasing)
-    )
+    val hours by animatedTimeAngleAsState(state.hoursAngle,)
+    val minutes by animatedTimeAngleAsState(state.minutesAngle)
+    val seconds by animatedTimeAngleAsState(state.secondsAngle)
     Box(
         modifier = modifier
             .aspectRatio(1f)
@@ -204,11 +228,6 @@ private fun DrawScope.drawTimeCircles(
     minutes: Float,
     hours: Float
 ) {
-//    drawCircle(
-//        brush = SolidColor(Color.White.copy(alpha = 0.2f)),
-//        alpha = 0.3f,
-//        style = Stroke(width = 10f)
-//    )
     drawArc(
         brush = brushes.outerSweepGradient,
         startAngle = 1.5f,
@@ -216,12 +235,6 @@ private fun DrawScope.drawTimeCircles(
         useCenter = false,
         style = stroke
     )
-//    drawCircle(
-//        brush = SolidColor(Color.White.copy(alpha = 0.2f)),
-//        radius = size.width * 0.43f,
-//        alpha = 0.3f,
-//        style = Stroke(width = 10f)
-//    )
     drawArc(
         brush = brushes.midSweepGradient,
         startAngle = 1.5f,
@@ -231,12 +244,6 @@ private fun DrawScope.drawTimeCircles(
         size = Size(size.width * 0.43f * 2f, size.width * 0.43f * 2f),
         style = stroke
     )
-//    drawCircle(
-//        brush = SolidColor(Color.White.copy(alpha = 0.2f)),
-//        radius = size.width * 0.36f,
-//        alpha = 0.3f,
-//        style = Stroke(width = 10f)
-//    )
     drawArc(
         brush = brushes.innerSweepGradient,
         startAngle = 1.5f,
@@ -265,12 +272,12 @@ private fun TimerPlaybackControls(
                 if (!state.isPlaying) {
                     PlaybackControlIcon(
                         imageVector = Icons.Default.PlayArrow,
-                        tint = green
+                        tint = lightPurpleBlue
                     )
                 } else {
                     PlaybackControlIcon(
                         imageVector = Icons.Default.Pause,
-                        tint = orange
+                        tint = lightPurpleBlue
                     )
                 }
             }
@@ -278,7 +285,7 @@ private fun TimerPlaybackControls(
             IconButton(modifier = modifier, onClick = onReset) {
                 PlaybackControlIcon(
                     imageVector = Icons.Default.Refresh,
-                    tint = red
+                    tint = lightPurpleBlue
                 )
             }
         }
@@ -287,19 +294,39 @@ private fun TimerPlaybackControls(
 
 private fun Vibrator.vibrate() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+        vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
     } else {
-        //deprecated in API 26
-        vibrate(500);
+        vibrate(500)
     }
 }
 
-class TimeCircleBrushes {
-    val outerSweepGradient = Brush.sweepGradient(listOf(outerRingDark, outerRingLight))
-    val midSweepGradient = Brush.sweepGradient(listOf(midRingDark, midRingLight))
-    val innerSweepGradient = Brush.sweepGradient(listOf(innerRingDark, innerRingLight))
-
-//    val outerRadialGradient = Brush.radialGradient(listOf(outerRingLighter, outerRingLight))
-//    val midRadialGradient = Brush.radialGradient(listOf(midRingLighter, midRingLight))
-//    val innerRadialGradient = Brush.radialGradient(listOf(innerRingLighter, innerRingLight))
+@Composable
+private fun animatedTimeAngleAsState(angle: Float): State<Float> {
+    return animateFloatAsState(
+        angle,
+        tween(TickerIntervalMillis.toInt(), easing = LinearEasing)
+    )
 }
+
+private fun Animatable<Float, AnimationVector1D>.stop(
+    coroutineScope: CoroutineScope
+) {
+    coroutineScope.launch { stop() }
+}
+
+private fun Animatable<Float, AnimationVector1D>.animate(
+    coroutineScope: CoroutineScope,
+) {
+    coroutineScope.launch {
+        animateTo(
+            targetValue = 360f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(990000, easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse
+            )
+        )
+    }
+}
+
+@Composable
+private fun vibrator() = ContextCompat.getSystemService(LocalContext.current, Vibrator::class.java)

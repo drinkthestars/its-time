@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.example.androiddevchallenge.ui
 
 import androidx.compose.runtime.Stable
@@ -12,7 +27,10 @@ import kotlinx.coroutines.launch
 @Stable
 class TimeState(
     private val coroutineScope: CoroutineScope,
-    private val onCountDownComplete: () -> Unit
+    private val onCountdownStarted: () -> Unit,
+    private val onCountdownPaused: () -> Unit,
+    private val onCountdownComplete: () -> Unit,
+    private val onCountdownReset: () -> Unit
 ) {
     var isPlaying by mutableStateOf(false)
     var isTimeDisplayAlpha by mutableStateOf(1f)
@@ -23,7 +41,7 @@ class TimeState(
 
     var hoursLeft by mutableStateOf(0)
     var minutesLeft by mutableStateOf(0)
-    var secondsLeft by mutableStateOf(10)
+    var secondsLeft by mutableStateOf(0)
 
     private var wasPaused by mutableStateOf(false)
     private var timerJob: Job? = null
@@ -35,8 +53,10 @@ class TimeState(
         if (isPlaying) {
             isPlaying = false
             wasPaused = true
+            onCountdownPaused()
             timerJob?.cancel()
         } else {
+            if (totalSecondsLeft == 0) return
             timerJob?.cancel()
             timerJob = coroutineScope.launch {
                 if (!wasPaused) {
@@ -44,6 +64,7 @@ class TimeState(
                     delay(TickerStartDelayMillis)
                 }
                 isPlaying = true
+                onCountdownStarted()
                 while (totalSecondsLeft > 0) {
                     delay(TickerIntervalMillis)
                     countDown()
@@ -113,6 +134,7 @@ class TimeState(
         timerJob = null
         blinkJob?.cancel()
         blinkJob = null
+        onCountdownReset()
     }
 
     private fun blink() {
@@ -124,7 +146,7 @@ class TimeState(
             }
             isTimeDisplayAlpha = 1f
             isPlaying = false
-            onCountDownComplete()
+            onCountdownComplete()
         }
     }
 
