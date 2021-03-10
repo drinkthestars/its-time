@@ -1,4 +1,4 @@
-# Put title of your app here
+# Its Time
 
 <!--- Replace <OWNER> with your Github Username and <REPOSITORY> with the name of your repository. -->
 <!--- You can find both of these in the url bar when you open your repository in github. -->
@@ -7,7 +7,9 @@
 
 ## :scroll: Description
 A "minimal" timer that displays 3 colored rings to indicate the progress of seconds, hours, and minutes, from the outside-in.
-In the center of the timer, a 3D projected cube rotates as the timer progresses.
+The timer can be paused & reset. While paused, the timer's time units can be updated.
+
+In the center of the timer, a 3D projected cube appears and rotates as the timer progresses.
 
 
 ## :bulb: Motivation and Context
