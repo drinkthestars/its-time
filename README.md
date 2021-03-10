@@ -8,7 +8,7 @@ A "minimal" timer that displays 3 colored rings to indicate the progress of seco
 The timer can be paused & reset. While paused, the timer's time units can be updated. Once the timer is up, the time display blinks a few
 times while sending out a short vibration.
 
-In the center of the timer, a 3D projected cube appears and rotates as the timer progresses.
+In the center of the timer, a 3D projected rotates as the timer progresses.
 
 
 ## :bulb: Motivation and Context
@@ -19,8 +19,8 @@ Timer design inspired by a couple of Dribbbles, such as [this](https://dribbble.
 
 
 ## :camera_flash: Screenshots
-<img src="/results/screenshot_1.png" width="260">&emsp;<img src="/results/screenshot_2.png" width="260">
-<img src="/results/screenshot_3.png" width="260">&emsp;<img src="/results/screenshot_4.png" width="260">
+<img src="/results/screenshot_1.png" width="180">&emsp;<img src="/results/screenshot_2.png" width="180">
+<img src="/results/screenshot_3.png" width="180">&emsp;<img src="/results/screenshot_4.png" width="180">
 
 ## License
 ```
