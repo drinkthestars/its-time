@@ -19,8 +19,8 @@ Timer design inspired by a couple of Dribbbles, such as [this](https://dribbble.
 
 
 ## :camera_flash: Screenshots
-<img src="/results/screenshot_1.png" width="180">&emsp;<img src="/results/screenshot_2.png" width="180">
-<img src="/results/screenshot_3.png" width="180">&emsp;<img src="/results/screenshot_4.png" width="180">
+<img src="/results/screenshot_1.png" width="220">&emsp;<img src="/results/screenshot_2.png" width="220">
+<img src="/results/screenshot_3.png" width="220">&emsp;<img src="/results/screenshot_4.png" width="220">
 
 ## License
 ```
