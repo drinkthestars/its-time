@@ -1,13 +1,12 @@
 # Its Time
 
-<!--- Replace <OWNER> with your Github Username and <REPOSITORY> with the name of your repository. -->
-<!--- You can find both of these in the url bar when you open your repository in github. -->
 ![Workflow result](https://github.com/drinkthestars/its-time/workflows/Check/badge.svg)
 
 
 ## :scroll: Description
-A "minimal" timer that displays 3 colored rings to indicate the progress of seconds, hours, and minutes, from the outside-in.
-The timer can be paused & reset. While paused, the timer's time units can be updated.
+A "minimal" timer that displays 3 colored rings to indicate the progress of seconds, minutes, and hours, from the outside going in.
+The timer can be paused & reset. While paused, the timer's time units can be updated. Once the timer is up, the time display blinks a few
+times while sending out a short vibration.
 
 In the center of the timer, a 3D projected cube appears and rotates as the timer progresses.
 
@@ -16,12 +15,12 @@ In the center of the timer, a 3D projected cube appears and rotates as the timer
 Explores animation/state choreography and Canvas drawing APIs in Compose. The rotating cube is an exercise in
 3D -> 2D projection mechanics, inspired by [The Coding Train's](https://www.youtube.com/watch?v=p4Iz0XJY-Qk&ab_channel=TheCodingTrain) Processing 3 tutorials.
 
-Timer design inspired by a couple of designs on Dribbble such as [this](https://dribbble.com/shots/5717098-Daily-UI-Design-Challenge-014-Countdown-Timer) and [this](https://dribbble.com/shots/5115846-Daily-UI-014-Countdown-Timer)
+Timer design inspired by a couple of Dribbbles, such as [this](https://dribbble.com/shots/5717098-Daily-UI-Design-Challenge-014-Countdown-Timer) and [this](https://dribbble.com/shots/5115846-Daily-UI-014-Countdown-Timer).
 
 
 ## :camera_flash: Screenshots
-<!-- You can add more screenshots here if you like -->
 <img src="/results/screenshot_1.png" width="260">&emsp;<img src="/results/screenshot_2.png" width="260">
+<img src="/results/screenshot_3.png" width="260">&emsp;<img src="/results/screenshot_4.png" width="260">
 
 ## License
 ```

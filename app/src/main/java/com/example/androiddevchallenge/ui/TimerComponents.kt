@@ -119,7 +119,7 @@ fun TimeSeparator() {
         textAlign = TextAlign.Center,
         text = ":",
         style = MaterialTheme.typography.h4,
-        fontWeight = FontWeight.Light,
+        fontWeight = FontWeight.Bold,
         letterSpacing = 2.sp
     )
 }
@@ -130,7 +130,7 @@ fun TimeText(text: Int) {
         textAlign = TextAlign.Center,
         text = "$text",
         style = MaterialTheme.typography.h3,
-        fontWeight = FontWeight.Light,
+        fontWeight = FontWeight.Normal,
         letterSpacing = 2.sp
     )
 }

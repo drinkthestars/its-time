@@ -19,12 +19,8 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -73,8 +69,6 @@ import androidx.core.content.ContextCompat
 import com.example.androiddevchallenge.ui.theme.cubeEdges
 import com.example.androiddevchallenge.ui.theme.lightNavy
 import com.example.androiddevchallenge.ui.theme.lightPurpleBlue
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 internal const val TickerIntervalMillis = 1000L
 internal const val TickerStartDelayMillis = 400L
@@ -188,7 +182,7 @@ private fun TimeCircles(
     content: @Composable BoxScope.() -> Unit,
 ) {
     var size by remember { mutableStateOf(IntSize.Zero) }
-    val hours by animatedTimeAngleAsState(state.hoursAngle,)
+    val hours by animatedTimeAngleAsState(state.hoursAngle)
     val minutes by animatedTimeAngleAsState(state.minutesAngle)
     val seconds by animatedTimeAngleAsState(state.secondsAngle)
     Box(
@@ -303,29 +297,9 @@ private fun Vibrator.vibrate() {
 @Composable
 private fun animatedTimeAngleAsState(angle: Float): State<Float> {
     return animateFloatAsState(
-        angle,
-        tween(TickerIntervalMillis.toInt(), easing = LinearEasing)
+        targetValue = angle,
+        animationSpec = tween(TickerIntervalMillis.toInt(), easing = LinearEasing)
     )
-}
-
-private fun Animatable<Float, AnimationVector1D>.stop(
-    coroutineScope: CoroutineScope
-) {
-    coroutineScope.launch { stop() }
-}
-
-private fun Animatable<Float, AnimationVector1D>.animate(
-    coroutineScope: CoroutineScope,
-) {
-    coroutineScope.launch {
-        animateTo(
-            targetValue = 360f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(990000, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse
-            )
-        )
-    }
 }
 
 @Composable

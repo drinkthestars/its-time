@@ -50,29 +50,29 @@ fun RotatingCube(
     Canvas(modifier = modifier) {
         cubePoints.map {
             val rotatedX = multiply(
-                a = rotationX(cubeState.animatedCubeAngle.value),
+                a = rotationX(cubeState.animatedCubeAngle.value - 5f),
                 b = it,
                 r1 = 3,
                 c1 = 3,
                 c2 = 1
             )
             val rotatedXY = multiply(
-                a = rotationY(cubeState.animatedCubeAngle.value),
+                a = rotationY(cubeState.animatedCubeAngle.value - 3f),
                 b = rotatedX,
                 r1 = 3,
                 c1 = 3,
                 c2 = 1
             )
             val rotatedXYZ = multiply(
-                a = rotationZ(cubeState.animatedCubeAngle.value),
+                a = rotationZ(cubeState.animatedCubeAngle.value - 6f),
                 b = rotatedXY,
                 r1 = 3,
                 c1 = 3,
                 c2 = 1
             )
-//            val skewFactor = (CamDistance - normalize(rotatedXYZ.last(), max = 2.8f, min = -2.8f))
+            val skewFactor = skewFactor(rotatedXYZ)
             val projected2D = multiply(
-                a = skewed2DProjection(),
+                a = skewed2DProjection(skew = 1 / skewFactor),
                 b = rotatedXYZ,
                 r1 = 2,
                 c1 = 3,
@@ -166,14 +166,6 @@ private fun DrawScope.draw(
 ) {
     val startOffset = offsets[start]
     val endOffset = offsets[end]
-    drawPoints(
-        points = offsets,
-        color = color,
-        pointMode = PointMode.Points,
-        strokeWidth = 15f,
-        alpha = alpha,
-        cap = StrokeCap.Round
-    )
     drawLine(
         start = startOffset,
         end = endOffset,
@@ -182,6 +174,25 @@ private fun DrawScope.draw(
         alpha = alpha,
         cap = StrokeCap.Round
     )
+    drawPoints(
+        points = offsets,
+        color = color,
+        pointMode = PointMode.Points,
+        strokeWidth = 14f,
+        alpha = alpha,
+        cap = StrokeCap.Round
+    )
+}
+
+private fun skewFactor(rotatedXYZ: FloatArray) =
+    (CamDistance - normalize(rotatedXYZ.last(), max = 2.8f, min = -2.8f))
+
+private fun normalize(
+    value: Float,
+    max: Float,
+    min: Float
+): Float {
+    return (value - min) / (max - min)
 }
 
 @Composable
@@ -200,13 +211,13 @@ class CubeState(
 
     fun animate() {
         coroutineScope.launch {
-            animatedCubeAlpha.animateTo(1f, tween(800, easing = LinearEasing))
+            animatedCubeAlpha.animateTo(0.6f, tween(800, easing = LinearEasing))
         }
         coroutineScope.launch {
             animatedCubeAngle.animateTo(
                 targetValue = 360f,
                 animationSpec = infiniteRepeatable(
-                    animation = tween(998000, easing = LinearEasing),
+                    animation = tween(999900, easing = LinearEasing),
                     repeatMode = RepeatMode.Reverse
                 )
             )
@@ -219,12 +230,4 @@ class CubeState(
             stop()
         }
     }
-}
-
-private fun normalize(
-    value: Float,
-    max: Float,
-    min: Float
-): Float {
-    return (value - min) / (max - min)
 }

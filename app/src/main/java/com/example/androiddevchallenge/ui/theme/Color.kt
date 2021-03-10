@@ -17,7 +17,7 @@ package com.example.androiddevchallenge.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val cubeEdges = Color(0x997B80A2)
+val cubeEdges = Color(0xFF7B80A2)
 val timeControls = Color(0xC3E7FFC9)
 
 val darkNavy = Color(0xFF2C2F3D)
